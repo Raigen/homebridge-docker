@@ -1,0 +1,18 @@
+sudo: required
+services:
+- docker
+language: bash
+script:
+# prepare qemu
+- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+# build image
+- docker build -t raigen/rpi-homebridge-fhem .
+# test image
+#- docker run raigen/rpi-homebridge-fhem node --version
+# push image
+- >
+  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+    docker push raigen/rpi-homebridge-fhem
+  fi
+
